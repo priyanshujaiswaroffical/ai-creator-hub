@@ -3,9 +3,7 @@
 # ============================================
 
 # --- Environment & Secrets ---
-.env
-.env.*
-!.env.example
+.env*
 
 # --- Python ---
 __pycache__/
