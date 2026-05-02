@@ -14,7 +14,7 @@ import ContactSection from '@/components/client/ContactSection';
 import Footer from '@/components/server/Footer';
 import dynamic from 'next/dynamic';
 
-const AIChatWidget = dynamic(() => import('@/components/client/AIChatWidget'), { 
+const AIChatWidget = dynamic(() => import('../components/client/AIChatWidget'), { 
   ssr: false 
 });
 
