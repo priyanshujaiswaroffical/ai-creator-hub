@@ -90,7 +90,7 @@ export async function POST(req: Request) {
                                 <table border="0" cellspacing="0" cellpadding="0">
                                     <tr>
                                         <td align="center" bgcolor="#0f172a" style="border-radius: 2px;">
-                                            <a href="https://ai-creator-hub-six.vercel.app" target="_blank" style="padding: 14px 30px; font-size: 13px; font-family: Helvetica, Arial, sans-serif; color: #ffffff !important; text-decoration: none; font-weight: 600; display: inline-block; letter-spacing: 1px;">
+                                            <a href="https://priyanshu-studio.vercel.app" target="_blank" style="padding: 14px 30px; font-size: 13px; font-family: Helvetica, Arial, sans-serif; color: #ffffff !important; text-decoration: none; font-weight: 600; display: inline-block; letter-spacing: 1px;">
                                                 VIEW SHOWCASE
                                             </a>
                                         </td>
