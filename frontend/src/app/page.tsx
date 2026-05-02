@@ -1,7 +1,8 @@
 /**
  * Main Page — Composes all sections into a single-page scrolling experience.
- * Server component that imports client components.
  */
+
+'use client';
 
 import Navbar from '@/components/client/Navbar';
 import HeroSection from '@/components/client/HeroSection';
