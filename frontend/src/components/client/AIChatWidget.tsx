@@ -7,6 +7,29 @@
 import { useState, useRef, useEffect } from 'react';
 import { useChatStore } from '@/store/chat-store';
 
+function TypewriterText({ text, isStreaming }: { text: string, isStreaming: boolean }) {
+  const [displayedText, setDisplayedText] = useState('');
+  
+  useEffect(() => {
+    // If we're not streaming and text is already fully displayed, don't restart
+    if (!isStreaming && displayedText === text) return;
+    
+    // If text is shorter than displayed (like a clear), reset
+    if (text.length < displayedText.length) {
+      setDisplayedText(text);
+      return;
+    }
+
+    const timeout = setTimeout(() => {
+      setDisplayedText(text.slice(0, displayedText.length + 1));
+    }, 15); // Adjust speed here (lower = faster)
+
+    return () => clearTimeout(timeout);
+  }, [text, displayedText, isStreaming]);
+
+  return <>{displayedText}</>;
+}
+
 export default function AIChatWidget() {
   const [input, setInput] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -176,12 +199,16 @@ export default function AIChatWidget() {
                   lineHeight: '1.6',
                   boxShadow: msg.role === 'user' ? '0 4px 15px rgba(0, 240, 255, 0.2)' : 'none'
                 }}>
-                  {msg.content || (
-                    <div style={{ display: 'flex', gap: '4px', alignItems: 'center', height: '20px' }}>
-                      <div className="typing-dot" style={{ animationDelay: '0s' }}></div>
-                      <div className="typing-dot" style={{ animationDelay: '0.2s' }}></div>
-                      <div className="typing-dot" style={{ animationDelay: '0.4s' }}></div>
-                    </div>
+                  {msg.role === 'assistant' && msg.content ? (
+                    <TypewriterText text={msg.content} isStreaming={isStreaming} />
+                  ) : (
+                    msg.content || (
+                      <div style={{ display: 'flex', gap: '4px', alignItems: 'center', height: '20px' }}>
+                        <div className="typing-dot" style={{ animationDelay: '0s' }}></div>
+                        <div className="typing-dot" style={{ animationDelay: '0.2s' }}></div>
+                        <div className="typing-dot" style={{ animationDelay: '0.4s' }}></div>
+                      </div>
+                    )
                   )}
                 </div>
               </div>
