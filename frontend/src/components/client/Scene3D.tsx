@@ -15,6 +15,11 @@ function AbstractGeometry() {
   const meshRef = useRef<THREE.Mesh>(null);
   const targetRef = useRef(new THREE.Vector3());
   const mousePosition = useScrollStore((s) => s.mousePosition);
+  const { viewport } = useThree();
+
+  // Dynamically scale based on viewport width to prevent it being massive on mobile
+  const isMobile = viewport.width < 5;
+  const targetScale = isMobile ? 0.9 : 1.2;
 
   useFrame((state, delta) => {
     if (!meshRef.current) return;
@@ -23,7 +28,7 @@ function AbstractGeometry() {
     meshRef.current.rotation.x += delta * 0.15;
     meshRef.current.rotation.y += delta * 0.2;
 
-    // High-intensity mouse follow (2.5x more movement)
+    // High-intensity mouse follow
     targetRef.current.set(mousePosition.x * 5, mousePosition.y * 3, 0);
     meshRef.current.position.lerp(targetRef.current, 0.03);
     
@@ -37,7 +42,7 @@ function AbstractGeometry() {
 
   return (
     <Float speed={2} rotationIntensity={1} floatIntensity={2}>
-      <mesh ref={meshRef} position={[0, 0, 0]} scale={1.5}>
+      <mesh ref={meshRef} position={[0, 0, 0]} scale={targetScale}>
         <icosahedronGeometry args={[1, 0]} />
         <MeshDistortMaterial
           color="#00F0FF"
@@ -61,8 +66,8 @@ export default function Scene3D() {
     <div className="absolute inset-0 pointer-events-none" style={{ opacity: 0.6 }}>
       <Canvas
         camera={{ position: [0, 0, 5], fov: 45 }}
-        dpr={[1, 2]}
-        gl={{ antialias: true, alpha: true }}
+        dpr={[1, 1.5]} // Capped at 1.5 to prevent massive lag on retina mobile screens
+        gl={{ antialias: false, alpha: true, powerPreference: "high-performance" }}
       >
         <ambientLight intensity={0.5} />
         <directionalLight position={[10, 10, 5]} intensity={2} color="#00F0FF" />
@@ -71,7 +76,7 @@ export default function Scene3D() {
         <AbstractGeometry />
         
         {/* Floating particles background */}
-        <Sparkles count={100} scale={10} size={2} speed={0.4} color="#00F0FF" opacity={0.5} />
+        <Sparkles count={80} scale={10} size={2} speed={0.4} color="#00F0FF" opacity={0.4} />
         
         <Environment preset="city" />
       </Canvas>
