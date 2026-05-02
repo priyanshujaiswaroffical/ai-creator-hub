@@ -100,17 +100,6 @@ async def api_status():
     }
 
 
-# ============================================
-# Frontend Static Files (Mount Last!)
-# ============================================
-
-frontend_path = os.path.join(os.path.dirname(__file__), "..", "frontend", "out")
-if os.path.exists(frontend_path):
-    app.mount("/", StaticFiles(directory=frontend_path, html=True), name="frontend")
-else:
-    print(f"WARNING: Frontend build not found at {frontend_path}. Run 'npm run build' in the frontend directory.")
-
-
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("backend.main:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
