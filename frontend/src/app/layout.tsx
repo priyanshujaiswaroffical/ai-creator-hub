@@ -43,6 +43,11 @@ export const metadata: Metadata = {
     locale: 'en_US',
     siteName: 'CreatorHub',
   },
+  icons: {
+    icon: '/icon.svg',
+    shortcut: '/icon.svg',
+    apple: '/icon.svg',
+  },
   twitter: {
     card: 'summary_large_image',
     title: 'CreatorHub — AI-Native Full-Stack Creator',
