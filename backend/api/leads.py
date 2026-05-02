@@ -101,12 +101,24 @@ async def submit_lead(request: LeadRequest):
         from backend.services.notification_service import send_email_notification, send_client_auto_reply
         
         async def process_lead(data: dict):
+            print(f"🔄 [DEBUG] Starting background process for lead: {data['email']}")
+            
             # 1. Save to Supabase
-            await save_to_supabase_direct(data)
+            success = await save_to_supabase_direct(data)
+            if success:
+                print("✅ [DEBUG] Successfully saved to Supabase")
+            else:
+                print("❌ [DEBUG] Failed to save to Supabase")
+
             # 2. Send email notification to YOU
-            send_email_notification(data)
+            print("✉️ [DEBUG] Attempting to send notification to creator...")
+            email_success = send_email_notification(data)
+            
             # 3. Send professional auto-reply to CLIENT
-            send_client_auto_reply(data)
+            print("✉️ [DEBUG] Attempting to send auto-reply to client...")
+            auto_reply_success = send_client_auto_reply(data)
+            
+            print(f"🏁 [DEBUG] Background process finished. Email: {email_success}, Auto-reply: {auto_reply_success}")
 
         asyncio.create_task(process_lead(lead_data))
         
