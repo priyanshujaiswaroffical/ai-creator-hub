@@ -11,8 +11,12 @@ import StatsSection from '@/components/client/StatsSection';
 import ProjectsSection from '@/components/client/ProjectsSection';
 import TestimonialsSection from '@/components/client/TestimonialsSection';
 import ContactSection from '@/components/client/ContactSection';
-import AIChatWidget from '@/components/client/AIChatWidget';
 import Footer from '@/components/server/Footer';
+import dynamic from 'next/dynamic';
+
+const AIChatWidget = dynamic(() => import('@/components/client/AIChatWidget'), { 
+  ssr: false 
+});
 
 export default function Home() {
   return (

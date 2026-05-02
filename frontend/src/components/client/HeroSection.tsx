@@ -7,8 +7,14 @@
 
 import { motion } from 'framer-motion';
 import { useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import { useScrollStore } from '@/store/scroll-store';
-import ScrollCanvas from './ScrollCanvas';
+
+// Lazy load the heavy 3D Canvas
+const ScrollCanvas = dynamic(() => import('./ScrollCanvas'), { 
+  ssr: false,
+  loading: () => <div className="absolute inset-0 bg-obsidian" />
+});
 
 const containerVariants = {
   hidden: {},
