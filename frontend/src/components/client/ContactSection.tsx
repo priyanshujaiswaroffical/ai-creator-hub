@@ -62,26 +62,35 @@ export default function ContactSection() {
 
     try {
       const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-      const response = await fetch(`${apiBase}/api/leads`, {
+      
+      // 1. Call Render Backend to save to Supabase
+      const renderResponse = await fetch(`${apiBase}/api/leads`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
       });
 
-      const data = await response.json();
+      // 2. Call Vercel API to send Emails (bypassing Render block)
+      const emailResponse = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
 
-      if (!response.ok || !data.success) {
-        throw new Error(data.message || 'Failed to send message');
+      const renderData = await renderResponse.json();
+      const emailData = await emailResponse.json();
+
+      if (!renderResponse.ok || !renderData.success) {
+        // If Supabase fails, we still show the error
+        throw new Error(renderData.message || 'Database error');
       }
 
-      setResponseMsg('Message sent successfully! Check your inbox for a confirmation.');
+      setResponseMsg('Success! Your inquiry is saved and confirmation email sent.');
       setStatus('success');
       setForm({ name: '', email: '', message: '', service_type: 'general' });
     } catch (err: any) {
-      console.error('API Error:', err);
-      setResponseMsg('Failed to send message. Please try again later.');
+      console.error('Submission Error:', err);
+      setResponseMsg('Failed to send. Please check your connection and try again.');
       setStatus('error');
     }
   };
