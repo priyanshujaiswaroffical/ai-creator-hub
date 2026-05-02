@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import Script from 'next/script';
 import './globals.css';
 import CursorParticles from '@/components/client/CursorParticles';
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 export const metadata: Metadata = {
   title: 'CreatorHub — AI-Native Full-Stack Creator',
@@ -105,6 +107,8 @@ export default function RootLayout({
       <body className="antialiased">
         {children}
         <CursorParticles />
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
