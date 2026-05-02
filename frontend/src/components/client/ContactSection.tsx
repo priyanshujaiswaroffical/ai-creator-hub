@@ -61,25 +61,27 @@ export default function ContactSection() {
     setStatus('sending');
 
     try {
-      // Direct insertion into Supabase
-      const { error } = await supabase.from('leads').insert([
-        {
-          name: form.name,
-          email: form.email,
-          message: form.message,
-          service_type: form.service_type,
-          created_at: new Date().toISOString(),
+      const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const response = await fetch(`${apiBase}/api/leads`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      ]);
+        body: JSON.stringify(form),
+      });
 
-      if (error) throw error;
+      const data = await response.json();
 
-      setResponseMsg('Message sent successfully! I will get back to you soon.');
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || 'Failed to send message');
+      }
+
+      setResponseMsg('Message sent successfully! Check your inbox for a confirmation.');
       setStatus('success');
       setForm({ name: '', email: '', message: '', service_type: 'general' });
     } catch (err: any) {
-      console.error('Supabase Error:', err);
-      setResponseMsg('Failed to send message. Please ensure your Supabase keys are configured in .env.local');
+      console.error('API Error:', err);
+      setResponseMsg('Failed to send message. Please try again later.');
       setStatus('error');
     }
   };
