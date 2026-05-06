@@ -47,8 +47,8 @@ async def generate_mock_response(message: str) -> AsyncGenerator[str, None]:
 
 
 # Model names for routing
-MODEL_FLASH = "gemini-3-flash-preview"
-MODEL_PRO = "gemini-3-pro-preview"
+MODEL_FLASH = "gemini-1.5-flash"
+MODEL_PRO = "gemini-1.5-pro"
 
 
 async def generate_gemini_response(

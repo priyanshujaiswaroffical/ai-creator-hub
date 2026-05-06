@@ -95,6 +95,8 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
           rel="stylesheet"
         />
+      </head>
+      <body className="antialiased">
         {/* FOUC prevention — apply saved theme before first paint */}
         <Script
           id="theme-script"
@@ -108,8 +110,6 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-      </head>
-      <body className="antialiased">
         {children}
         <CursorParticles />
         <Analytics />

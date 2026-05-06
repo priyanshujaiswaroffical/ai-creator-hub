@@ -64,7 +64,7 @@ async def save_to_supabase_direct(data: dict):
         print("⚠️ Supabase credentials missing!")
         return False
         
-    url = f"{SUPABASE_URL}/rest/v1/leads"
+    url = f"{SUPABASE_URL}/rest/v1/portfolio_leads"
     headers = {
         "apikey": SUPABASE_KEY,
         "Authorization": f"Bearer {SUPABASE_KEY}",

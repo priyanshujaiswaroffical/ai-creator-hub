@@ -27,10 +27,10 @@ const PROJECTS = [
     description:
       'A proof-of-concept for digital workers targeting small businesses. Explores using LangChain and Gemini to handle FAQ responses and scheduling automations.',
     tech: ['Python', 'LangChain', 'Gemini 3 Flash', 'FastAPI'],
-    status: 'Prototyping',
+    status: 'Live v1.0',
     accent: 'var(--accent-purple)',
     icon: <Bot size={28} className="text-[var(--accent-purple)]" />,
-    href: null,
+    href: '/projects/whatsapp-agency',
   },
   {
     title: '3D Scrollytelling Demo',
