@@ -84,7 +84,7 @@ app.add_middleware(RateLimitMiddleware)
 # CORS (Allow Next.js frontend)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_origin_list,
+    allow_origins=settings.cors_origin_list + ["https://*.vercel.app"],
     allow_credentials=True,
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["Content-Type", "Authorization"],
