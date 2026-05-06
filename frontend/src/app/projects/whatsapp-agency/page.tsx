@@ -81,8 +81,9 @@ export default function WhatsAppAgencyDashboard() {
     let isMounted = true;
     const fetchData = async () => {
       try {
+        const apiBase = process.env.NEXT_PUBLIC_AGENCY_API_URL || 'http://localhost:8000';
         const phoneParam = isSearchReady ? `&phone=${clientPhone}` : '';
-        const url = `http://localhost:8000/api/conversations?limit=20${phoneParam}`;
+        const url = `${apiBase}/api/conversations?limit=20${phoneParam}`;
         
         const res = await fetch(url, { headers: { 'Authorization': `Bearer WhatsappAiAgencySecret` } });
         const data = await res.json();
@@ -116,7 +117,8 @@ export default function WhatsAppAgencyDashboard() {
     if (!isLive || !activeChatId || activeChatId.startsWith('mock-')) return;
     const fetchMessages = async () => {
       try {
-        const res = await fetch(`http://localhost:8000/api/conversations/${activeChatId}`, { headers: { 'Authorization': `Bearer WhatsappAiAgencySecret` } });
+        const apiBase = process.env.NEXT_PUBLIC_AGENCY_API_URL || 'http://localhost:8000';
+        const res = await fetch(`${apiBase}/api/conversations/${activeChatId}`, { headers: { 'Authorization': `Bearer WhatsappAiAgencySecret` } });
         const data = await res.json();
         if (data.messages) setMessageCache(prev => ({ ...prev, [activeChatId]: data.messages }));
       } catch (err) { console.error('Message fetch error:', err); }

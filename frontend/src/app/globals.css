@@ -1,35 +1,36 @@
 @import "tailwindcss";
 
 /* :root fallback = light mode defaults */
+/* :root = Obsidian Dark by default */
 :root {
-  --bg-obsidian: #FDFDFD;
-  --bg-surface: #F5F5F7;
-  --bg-card: rgba(0,0,0,0.02);
-  --bg-card-hover: rgba(0,0,0,0.04);
-  --accent-cyan: #0891b2;
-  --accent-purple: #7c3aed;
-  --accent-pink: #db2777;
-  --accent-deep-blue: #2563eb;
-  --accent-gradient: linear-gradient(135deg, #0891b2 0%, #2563eb 100%);
-  --accent-gradient-hover: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
-  --text-primary: #1a1a2e;
-  --text-secondary: #52525b;
+  --bg-obsidian: #000000;
+  --bg-surface: #0a0a0a;
+  --bg-card: rgba(255,255,255,0.02);
+  --bg-card-hover: rgba(255,255,255,0.04);
+  --accent-cyan: #00f0ff;
+  --accent-purple: #7000ff;
+  --accent-pink: #ff007f;
+  --accent-deep-blue: #0033ff;
+  --accent-gradient: linear-gradient(135deg, #00f0ff 0%, #0033ff 100%);
+  --accent-gradient-hover: linear-gradient(135deg, #33f3ff 0%, #335cff 100%);
+  --text-primary: #ffffff;
+  --text-secondary: #a1a1aa;
   --text-muted: #a1a1aa;
-  --border-subtle: rgba(0,0,0,0.08);
-  --border-accent: rgba(8,145,178,0.3);
+  --border-subtle: rgba(255,255,255,0.05);
+  --border-accent: rgba(0,240,255,0.3);
   --font-display: "Space Grotesk", sans-serif;
   --font-body: "Inter", sans-serif;
   --section-padding: clamp(6rem, 15vh, 10rem);
   --glass-blur: 32px;
-  --glass-bg: rgba(255,255,255,0.75);
-  --glass-border: rgba(0,0,0,0.06);
-  --noise-opacity: 0.02;
-  --section-alt-bg: #F0F0F5;
-  --scrollbar-track: #F5F5F7;
-  --scrollbar-thumb: #d4d4d8;
-  --scrollbar-thumb-hover: #a1a1aa;
-  --shadow-glow: 0 0 60px rgba(8,145,178,0.1), 0 0 120px rgba(124,58,237,0.06);
-  --shadow-inset: inset 0 1px 1px rgba(0,0,0,0.05);
+  --glass-bg: rgba(10,10,15,0.8);
+  --glass-border: rgba(255,255,255,0.06);
+  --noise-opacity: 0.035;
+  --section-alt-bg: #050505;
+  --scrollbar-track: #000000;
+  --scrollbar-thumb: #111111;
+  --scrollbar-thumb-hover: #52525b;
+  --shadow-glow: 0 0 60px rgba(0,240,255,0.15), 0 0 120px rgba(112,0,255,0.1);
+  --shadow-inset: inset 0 1px 1px rgba(255,255,255,0.1);
 }
 
 /* ═══ LIGHT MODE (Default) ═══ */
