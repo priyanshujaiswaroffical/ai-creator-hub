@@ -118,7 +118,8 @@ async def generate_gemini_response(
 
     except exceptions.InvalidArgument as e:
         print(f"❌ [AI ERROR] Invalid Argument: {e}")
-        yield "Configuration error. Please check the API key and model names."
+        yield f"Configuration error: {str(e)}"
     except Exception as e:
-        print(f"❌ [AI ERROR] Unexpected error: {type(e).__name__} - {e}")
-        yield "I encountered a slight glitch. Let's try again in a moment!"
+        error_msg = f"{type(e).__name__}: {str(e)}"
+        print(f"❌ [AI ERROR] Unexpected error: {error_msg}")
+        yield f"AI Glitch: {error_msg}. (Check Render logs for details)"

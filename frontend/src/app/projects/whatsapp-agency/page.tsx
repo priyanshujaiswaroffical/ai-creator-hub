@@ -153,7 +153,7 @@ export default function WhatsAppAgencyDashboard() {
   return (
     <div className="h-screen bg-[var(--bg-obsidian)] text-[var(--text-primary)] font-body selection:bg-[var(--accent-purple)] selection:text-white overflow-hidden flex flex-col">
       {/* Top Nav */}
-      <nav className="h-16 border-b border-[var(--glass-border)] bg-[var(--bg-surface)]/50 backdrop-blur-md flex items-center justify-between px-6 z-30 shrink-0">
+      <nav className="h-16 border-b border-white/5 bg-[#0a0a0a]/50 backdrop-blur-md flex items-center justify-between px-6 z-30 shrink-0">
         <div className="flex items-center gap-4">
           <Link href="/#projects" className="p-2 hover:bg-white/5 rounded-full transition-colors group">
             <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
@@ -178,10 +178,10 @@ export default function WhatsAppAgencyDashboard() {
         </div>
       </nav>
 
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex overflow-hidden bg-[#000000]">
         {/* Sidebar */}
-        <aside className="w-[300px] min-w-[300px] max-w-[300px] shrink-0 border-r border-[var(--glass-border)] bg-[var(--bg-surface)]/30 flex flex-col overflow-hidden">
-          <div className="p-5 border-b border-[var(--glass-border)] shrink-0">
+        <aside className="w-[300px] min-w-[300px] max-w-[300px] shrink-0 border-r border-white/5 bg-[#050505]/30 flex flex-col overflow-hidden">
+          <div className="p-5 border-b border-white/5 shrink-0">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" size={14} />
               <input 
@@ -246,9 +246,9 @@ export default function WhatsAppAgencyDashboard() {
         </aside>
 
         {/* Main Area */}
-        <main className="flex-1 flex flex-col bg-[var(--bg-obsidian)] relative overflow-hidden">
+        <main className="flex-1 flex flex-col bg-[#000000] relative overflow-hidden">
           {!isSearchReady && isLive && (
-             <div className="absolute inset-0 z-20 flex items-center justify-center bg-[var(--bg-obsidian)]/95 backdrop-blur-xl">
+             <div className="absolute inset-0 z-20 flex items-center justify-center bg-[#000000]/95 backdrop-blur-xl">
                 <div className="max-w-xl w-full p-10 text-center animate-in fade-in zoom-in duration-500">
                   <div className="w-20 h-20 rounded-3xl bg-[var(--accent-purple)]/10 flex items-center justify-center border border-[var(--accent-purple)]/20 mx-auto mb-8 shadow-[0_0_50px_rgba(112,0,255,0.2)]">
                     <ShieldCheck size={40} className="text-[var(--accent-purple)]" />
@@ -276,7 +276,7 @@ export default function WhatsAppAgencyDashboard() {
           )}
 
           {/* Header */}
-          <div className="h-16 px-8 border-b border-[var(--glass-border)] bg-[var(--bg-surface)]/30 flex items-center justify-between shrink-0">
+          <div className="h-16 px-8 border-b border-white/5 bg-[#0a0a0a]/30 flex items-center justify-center shrink-0">
             <div className="flex items-center gap-4 overflow-hidden">
                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[var(--accent-purple)]/20 to-transparent border border-white/10 flex items-center justify-center shrink-0"><MessageSquare size={20} className="text-[var(--accent-purple)]" /></div>
                <div className="overflow-hidden">
@@ -293,10 +293,10 @@ export default function WhatsAppAgencyDashboard() {
           <div className="flex-1 p-8 overflow-y-auto space-y-8 custom-scrollbar">
             {activeChat?.messages?.map((msg: any, idx: number) => (
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} key={idx} className={`flex flex-col max-w-[80%] ${msg.role === 'user' ? 'items-start' : 'items-end ml-auto text-right'}`}>
-                <div className={`p-5 rounded-2xl shadow-xl border ${msg.role === 'user' ? 'bg-[var(--bg-surface)] border-white/10 rounded-tl-none text-white' : 'bg-[var(--accent-purple)]/10 border-[var(--accent-purple)]/30 rounded-tr-none text-white shadow-[0_0_20px_rgba(112,0,255,0.1)]'}`}>
+                <div className={`p-5 rounded-2xl shadow-xl border ${msg.role === 'user' ? 'bg-[#0a0a0a] border-white/10 rounded-tl-none text-white' : 'bg-[var(--accent-purple)]/10 border-[var(--accent-purple)]/30 rounded-tr-none text-white shadow-[0_0_20px_rgba(112,0,255,0.1)]'}`}>
                   <p className="text-[14px] leading-relaxed">{msg.content}</p>
                 </div>
-                <div className="flex items-center gap-2 mt-3 text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)]">
+                <div className="flex items-center gap-2 mt-3 text-[10px] font-bold uppercase tracking-widest text-[#a1a1aa]">
                    {msg.role === 'user' ? 'Client' : 'AI Agent'} • {new Date(msg.created_at).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}
                 </div>
               </motion.div>
