@@ -1,12 +1,10 @@
 """
 Gemini AI Client — Handles both real Gemini calls and mock fallback.
-Reverted to legacy google-generativeai SDK for stability in Singapore region.
+Initializes Flash (speed) and Pro (analysis) model instances.
 """
 
 import asyncio
 from typing import AsyncGenerator
-import google.generativeai as genai
-from google.api_core import exceptions
 
 from backend.core.config import settings
 
@@ -48,9 +46,12 @@ async def generate_mock_response(message: str) -> AsyncGenerator[str, None]:
         await asyncio.sleep(0.04)
 
 
-# Model names for routing (Using the ones that worked for you yesterday)
+# Model names for routing
 MODEL_FLASH = "gemini-3-flash-preview"
 MODEL_PRO = "gemini-3-pro-preview"
+
+# Maximum retry attempts for transient regional blocks
+MAX_RETRIES = 3
 
 
 async def generate_gemini_response(
@@ -60,54 +61,86 @@ async def generate_gemini_response(
 ) -> AsyncGenerator[str, None]:
     """
     Generate a streamed response from Gemini.
-    Reverted to legacy SDK (v0.8.3) to restore Singapore functionality.
+    Falls back to mock mode if no API key is configured.
+    Routes to Pro model for complex queries, Flash for speed.
+    Includes retry logic for intermittent regional blocks.
     """
     if settings.is_mock_mode:
         async for chunk in generate_mock_response(message):
             yield chunk
         return
 
-    # --- Real Gemini integration (Legacy SDK) ---
+    # --- Real Gemini integration ---
+    import google.generativeai as genai
+    from google.api_core import exceptions
+
+    # Route to Pro for complex analysis, Flash for everything else
     model_name = MODEL_PRO if use_pro else MODEL_FLASH
     
     print(f"🔄 [AI DEBUG] Route: {model_name} | Query: {message[:30]}...")
     
-    try:
-        genai.configure(api_key=settings.GEMINI_API_KEY)
-        model = genai.GenerativeModel(model_name)
-        
-        system_prompt = (
-            f"You are {settings.CREATOR_NAME}'s AI representative. You talk like a real human—friendly, natural, and casual. No corporate robotic talk.\n"
-            "STRICT CONSTRAINTS:\n"
-            "1. NO MARKDOWN: NEVER use asterisks (* or **) for bold or italics. Use plain text only.\n"
-            "2. EXTREMELY CONCISE: Keep responses as short as possible. Use 1-2 sentences maximum.\n"
-            "3. NO BULLET POINTS: Use plain sentences or numbered items.\n"
-        )
+    for attempt in range(1, MAX_RETRIES + 1):
+        try:
+            genai.configure(api_key=settings.GEMINI_API_KEY)
+            model = genai.GenerativeModel(model_name)
+            
+            system_prompt = (
+                f"You are {settings.CREATOR_NAME}'s AI representative. You talk like a real human—friendly, natural, and casual. No corporate robotic talk.\n"
+                "STRICT CONSTRAINTS:\n"
+                "1. NO MARKDOWN: NEVER use asterisks (* or **) for bold or italics. Use plain text only.\n"
+                "2. EXTREMELY CONCISE: Keep responses as short as possible. Use 1-2 sentences maximum unless a detailed explanation is literally required.\n"
+                "3. NO BULLET POINTS: Use plain sentences or numbered items (1. 2. 3.).\n"
+                "GUIDELINES:\n"
+                "1. YOUR ROLE: You represent the creator. You know about AI Agents, 3D Web, and Video Production.\n"
+                "2. HANDLING PROJECTS: If they want to build something, suggest the contact form below quickly.\n"
+                "3. If they say 'Hi', just be a friendly human.\n"
+            )
 
-        full_prompt = f"{system_prompt}\n\n"
-        if context:
-            full_prompt += f"Relevant portfolio context:\n{context}\n\n"
-        full_prompt += f"User message: {message}"
+            full_prompt = f"{system_prompt}\n\n"
+            if context:
+                full_prompt += f"Relevant portfolio context:\n{context}\n\n"
+            full_prompt += f"User message: {message}"
 
-        # Legacy async streaming call
-        response = await model.generate_content_async(
-            full_prompt,
-            stream=True,
-        )
+            response = await model.generate_content_async(
+                full_prompt,
+                stream=True,
+            )
 
-        has_content = False
-        async for chunk in response:
-            try:
-                if chunk.text:
-                    has_content = True
-                    yield chunk.text
-            except ValueError:
+            has_content = False
+            async for chunk in response:
+                try:
+                    if chunk.text:
+                        has_content = True
+                        yield chunk.text
+                except ValueError:
+                    # This happens if the chunk has no text (e.g., safety filter)
+                    print(f"⚠️ [AI DEBUG] Chunk had no text. Safety ratings: {chunk.candidates[0].safety_ratings if chunk.candidates else 'None'}")
+                    continue
+
+            if not has_content:
+                print("⚠️ [AI DEBUG] No content was generated by Gemini.")
+                yield "I'm sorry, I couldn't process that request right now. Let's try something else!"
+
+            # Success — exit retry loop
+            return
+
+        except exceptions.FailedPrecondition as e:
+            # "User location is not supported" — retry after a short delay
+            print(f"⚠️ [AI RETRY {attempt}/{MAX_RETRIES}] Regional block detected, retrying in {attempt}s...")
+            if attempt < MAX_RETRIES:
+                await asyncio.sleep(attempt)  # Exponential backoff: 1s, 2s
                 continue
+            else:
+                print(f"❌ [AI ERROR] All {MAX_RETRIES} retries failed for regional block.")
+                yield "I'm temporarily unavailable from this region. Please try again in a moment!"
 
-        if not has_content:
-            yield "I'm sorry, I couldn't process that request right now. Let's try something else!"
+        except exceptions.InvalidArgument as e:
+            print(f"❌ [AI ERROR] Invalid Argument: {e}")
+            yield f"Configuration error: {str(e)}"
+            return
 
-    except Exception as e:
-        error_msg = f"{type(e).__name__}: {str(e)}"
-        print(f"❌ [AI ERROR] Unexpected error: {error_msg}")
-        yield f"AI Glitch: {error_msg}. (Check Render logs for details)"
+        except Exception as e:
+            error_msg = f"{type(e).__name__}: {str(e)}"
+            print(f"❌ [AI ERROR] Unexpected error: {error_msg}")
+            yield f"AI Glitch: {error_msg}. (Check Render logs for details)"
+            return
