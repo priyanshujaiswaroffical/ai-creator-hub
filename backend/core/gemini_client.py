@@ -94,7 +94,7 @@ async def generate_gemini_response(
         full_prompt += f"User message: {message}"
 
         # Asynchronous streaming call
-        stream = await client.aio.models.generate_content_stream(
+        stream = client.aio.models.generate_content_stream(
             model=model_name,
             contents=full_prompt,
             config=types.GenerateContentConfig(
