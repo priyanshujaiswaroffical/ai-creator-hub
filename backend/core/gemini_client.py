@@ -48,9 +48,9 @@ async def generate_mock_response(message: str) -> AsyncGenerator[str, None]:
         await asyncio.sleep(0.04)
 
 
-# Model names for routing (2.0 Stable)
-MODEL_FLASH = "gemini-2.0-flash"
-MODEL_PRO = "gemini-2.0-pro"
+# Model names for routing (Frontier Class 2026)
+MODEL_FLASH = "gemini-3-flash"
+MODEL_PRO = "gemini-3-pro"
 
 
 async def generate_gemini_response(
