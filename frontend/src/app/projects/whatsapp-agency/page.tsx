@@ -54,10 +54,11 @@ const MOCK_CONVERSATIONS = [
 export default function WhatsAppAgencyDashboard() {
   const [isLive, setIsLive] = useState(false);
   const [conversations, setConversations] = useState(MOCK_CONVERSATIONS);
-  const [activeChatId, setActiveChatId] = useState('mock-1');
+  const [activeChatId, setActiveChatId] = useState('mock-priyanshu');
   const [loading, setLoading] = useState(false);
   const [clientPhone, setClientPhone] = useState('');
   const [messageCache, setMessageCache] = useState<Record<string, any[]>>({});
+  const [showAccessDenied, setShowAccessDenied] = useState(false);
 
   const toggleLiveMode = (val: boolean) => {
     setIsLive(val);
@@ -68,7 +69,7 @@ export default function WhatsAppAgencyDashboard() {
       setTimeout(() => setLoading(false), 800);
     } else {
       setConversations(MOCK_CONVERSATIONS);
-      setActiveChatId('mock-1');
+      setActiveChatId('mock-priyanshu');
       setLoading(false);
     }
   };
