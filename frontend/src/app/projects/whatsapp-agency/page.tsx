@@ -243,7 +243,7 @@ export default function WhatsAppAgencyDashboard() {
                         </span>
                       )}
                     </div>
-                  </button>
+                  </motion.button>
                 );
               })
             }
