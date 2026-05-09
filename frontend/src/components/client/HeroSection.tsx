@@ -154,14 +154,14 @@ export default function HeroSection() {
           <span
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium tracking-wide"
             style={{
-              background: 'rgba(8, 145, 178, 0.08)',
-              border: '1px solid rgba(8, 145, 178, 0.2)',
-              color: 'var(--accent-cyan)',
+              background: 'var(--bg-card)',
+              border: '1px solid var(--border-accent)',
               fontFamily: 'var(--font-display)',
+              boxShadow: 'var(--shadow-inset)',
             }}
           >
             <span className="w-2 h-2 rounded-full bg-[var(--accent-cyan)] animate-pulse" />
-            AI-Native Full-Stack Creator
+            <span className="text-shimmer font-bold">AI-Native Full-Stack Creator</span>
           </span>
         </motion.div>
 

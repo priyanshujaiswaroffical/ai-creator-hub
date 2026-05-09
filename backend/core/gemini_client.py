@@ -1,10 +1,12 @@
 """
-Gemini AI Client — Handles both real Gemini calls and mock fallback.
-Initializes Flash (speed) and Pro (analysis) model instances.
+Gemini AI Client — Auto-Switch Model Cascade Implementation
+Routes to optimal model based on intent and automatically falls back if API fails.
 """
 
 import asyncio
 from typing import AsyncGenerator
+import google.generativeai as genai
+from google.api_core.exceptions import ResourceExhausted, FailedPrecondition, InvalidArgument
 
 from backend.core.config import settings
 
@@ -29,7 +31,6 @@ MOCK_RESPONSES: list[str] = [
 
 _mock_index: int = 0
 
-
 async def generate_mock_response(message: str) -> AsyncGenerator[str, None]:
     """Simulate a streamed AI response for local testing."""
     print("DEBUG: Using MOCK Gemini responses (Check your .env file and restart server)")
@@ -39,20 +40,33 @@ async def generate_mock_response(message: str) -> AsyncGenerator[str, None]:
     )
     _mock_index += 1
 
-    # Simulate streaming by yielding word by word
     words = response.split(" ")
     for i, word in enumerate(words):
         yield word + (" " if i < len(words) - 1 else "")
         await asyncio.sleep(0.04)
 
 
-# Model names for routing
-MODEL_FLASH = "gemini-3-flash-preview"
-MODEL_PRO = "gemini-3-pro-preview"
+# --- Model Cascade Config ---
+MODEL_TIERS = {
+    "ELITE":        settings.GEMINI_MODEL_ELITE,
+    "BRAIN":        settings.GEMINI_MODEL_PRO,
+    "SMART_FLASH":  settings.GEMINI_MODEL_FLASH_2,
+    "STABLE_FLASH": settings.GEMINI_MODEL_FLASH,
+    "LITE_FLASH":   settings.GEMINI_MODEL_LITE,
+    "SAFETY_NET":   "gemini-1.5-flash",
+}
 
-# Maximum retry attempts for transient regional blocks
-MAX_RETRIES = 3
+MAX_RETRIES_PER_MODEL = 2
 
+def _get_priority_list(message: str) -> list[str]:
+    msg = message.lower()
+    # Technical/Logic triggers → Pro/Elite boosted
+    elite_triggers = {"calculate", "solve", "logic", "complex", "step by step", "technical", "engineering"}
+    if any(t in msg for t in elite_triggers):
+        return ["STABLE_FLASH", "SMART_FLASH", "BRAIN", "ELITE", "SAFETY_NET"]
+
+    # General conversation → Flash-first for reliability
+    return ["STABLE_FLASH", "LITE_FLASH", "SMART_FLASH", "BRAIN", "ELITE", "SAFETY_NET"]
 
 async def generate_gemini_response(
     message: str,
@@ -60,87 +74,77 @@ async def generate_gemini_response(
     use_pro: bool = False,
 ) -> AsyncGenerator[str, None]:
     """
-    Generate a streamed response from Gemini.
-    Falls back to mock mode if no API key is configured.
-    Routes to Pro model for complex queries, Flash for speed.
-    Includes retry logic for intermittent regional blocks.
+    Generate a streamed response from Gemini using Auto-Switch Model Cascade.
     """
     if settings.is_mock_mode:
         async for chunk in generate_mock_response(message):
             yield chunk
         return
 
-    # --- Real Gemini integration ---
-    import google.generativeai as genai
-    from google.api_core import exceptions
+    genai.configure(api_key=settings.GEMINI_API_KEY)
 
-    # Route to Pro for complex analysis, Flash for everything else
-    model_name = MODEL_PRO if use_pro else MODEL_FLASH
-    
-    print(f"🔄 [AI DEBUG] Route: {model_name} | Query: {message[:30]}...")
-    
-    for attempt in range(1, MAX_RETRIES + 1):
-        try:
-            genai.configure(api_key=settings.GEMINI_API_KEY)
-            model = genai.GenerativeModel(model_name)
-            
-            system_prompt = (
-                f"You are {settings.CREATOR_NAME}'s AI representative. You talk like a real human—friendly, natural, and casual. No corporate robotic talk.\n"
-                "STRICT CONSTRAINTS:\n"
-                "1. NO MARKDOWN: NEVER use asterisks (* or **) for bold or italics. Use plain text only.\n"
-                "2. EXTREMELY CONCISE: Keep responses as short as possible. Use 1-2 sentences maximum unless a detailed explanation is literally required.\n"
-                "3. NO BULLET POINTS: Use plain sentences or numbered items (1. 2. 3.).\n"
-                "GUIDELINES:\n"
-                "1. YOUR ROLE: You represent the creator. You know about AI Agents, 3D Web, and Video Production.\n"
-                "2. HANDLING PROJECTS: If they want to build something, suggest the contact form below quickly.\n"
-                "3. If they say 'Hi', just be a friendly human.\n"
-            )
+    priority_keys = _get_priority_list(message)
 
-            full_prompt = f"{system_prompt}\n\n"
-            if context:
-                full_prompt += f"Relevant portfolio context:\n{context}\n\n"
-            full_prompt += f"User message: {message}"
+    # Boost BRAIN to top if pro requested
+    if use_pro and "BRAIN" in priority_keys:
+        priority_keys.remove("BRAIN")
+        priority_keys.insert(0, "BRAIN")
 
-            response = await model.generate_content_async(
-                full_prompt,
-                stream=True,
-            )
+    system_prompt = (
+        f"You are {settings.CREATOR_NAME}'s AI representative. You talk like a real human—friendly, natural, and casual. No corporate robotic talk.\n"
+        "STRICT CONSTRAINTS:\n"
+        "1. NO MARKDOWN: NEVER use asterisks (* or **) for bold or italics. Use plain text only.\n"
+        "2. EXTREMELY CONCISE: Keep responses as short as possible. Use 1-2 sentences maximum unless a detailed explanation is literally required.\n"
+        "3. NO BULLET POINTS: Use plain sentences or numbered items (1. 2. 3.).\n"
+        "GUIDELINES:\n"
+        "1. YOUR ROLE: You represent the creator. You know about AI Agents, 3D Web, and Video Production.\n"
+        "2. HANDLING PROJECTS: If they want to build something, suggest the contact form below quickly.\n"
+        "3. If they say 'Hi', just be a friendly human.\n"
+    )
 
-            has_content = False
-            async for chunk in response:
-                try:
-                    if chunk.text:
-                        has_content = True
-                        yield chunk.text
-                except ValueError:
-                    # This happens if the chunk has no text (e.g., safety filter)
-                    print(f"⚠️ [AI DEBUG] Chunk had no text. Safety ratings: {chunk.candidates[0].safety_ratings if chunk.candidates else 'None'}")
+    full_prompt = f"{system_prompt}\n\n"
+    if context:
+        full_prompt += f"Relevant portfolio context:\n{context}\n\n"
+    full_prompt += f"User message: {message}"
+
+    print(f"🔄 [AI CASCADE] Starting sequence. Priority: {priority_keys}")
+
+    # Cascade through models
+    for role_key in priority_keys:
+        model_name = MODEL_TIERS.get(role_key)
+        if not model_name: continue
+
+        for attempt in range(1, MAX_RETRIES_PER_MODEL + 1):
+            try:
+                print(f"🔄 [AI ATTEMPT] Trying model: {model_name} (Attempt {attempt})")
+                model = genai.GenerativeModel(model_name)
+                response = await model.generate_content_async(full_prompt, stream=True)
+
+                has_content = False
+                async for chunk in response:
+                    try:
+                        if chunk.text:
+                            has_content = True
+                            yield chunk.text
+                    except ValueError:
+                        continue
+
+                if has_content:
+                    return  # Success! Exit both loops
+
+            except (ResourceExhausted, FailedPrecondition, InvalidArgument) as e:
+                print(f"⚠️ [AI FAIL] {model_name} failed: {e.__class__.__name__}. Retrying in 0.8s...")
+                await asyncio.sleep(0.8)  # Breath before next attempt
+                if attempt < MAX_RETRIES_PER_MODEL:
                     continue
+                else:
+                    break  # Next model
 
-            if not has_content:
-                print("⚠️ [AI DEBUG] No content was generated by Gemini.")
-                yield "I'm sorry, I couldn't process that request right now. Let's try something else!"
+            except Exception as e:
+                print(f"❌ [AI CRITICAL] {model_name} crashed: {e}. Moving to next model.")
+                break  # Critical fail → next model
 
-            # Success — exit retry loop
-            return
-
-        except exceptions.FailedPrecondition as e:
-            # "User location is not supported" — retry after a short delay
-            print(f"⚠️ [AI RETRY {attempt}/{MAX_RETRIES}] Regional block detected, retrying in {attempt}s...")
-            if attempt < MAX_RETRIES:
-                await asyncio.sleep(attempt)  # Exponential backoff: 1s, 2s
-                continue
-            else:
-                print(f"❌ [AI ERROR] All {MAX_RETRIES} retries failed for regional block.")
-                yield "I'm temporarily unavailable from this region. Please try again in a moment!"
-
-        except exceptions.InvalidArgument as e:
-            print(f"❌ [AI ERROR] Invalid Argument: {e}")
-            yield f"Configuration error: {str(e)}"
-            return
-
-        except Exception as e:
-            error_msg = f"{type(e).__name__}: {str(e)}"
-            print(f"❌ [AI ERROR] Unexpected error: {error_msg}")
-            yield f"AI Glitch: {error_msg}. (Check Render logs for details)"
-            return
+    # ALL models failed → mock fallback (UI stays clean)
+    print("❌ [AI CASCADE FAILED] All models failed. Falling back to mock responses.")
+    async for chunk in generate_mock_response(message):
+        yield chunk

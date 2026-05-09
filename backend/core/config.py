@@ -22,6 +22,11 @@ class Settings(BaseSettings):
 
     # --- Google Gemini ---
     GEMINI_API_KEY: str = ""
+    GEMINI_MODEL_ELITE: str = "gemini-2.0-flash-thinking-exp"
+    GEMINI_MODEL_PRO:   str = "gemini-1.5-pro"
+    GEMINI_MODEL_FLASH_2: str = "gemini-2.0-flash"
+    GEMINI_MODEL_FLASH: str = "gemini-1.5-flash"
+    GEMINI_MODEL_LITE:  str = "gemini-1.5-flash-8b"
 
     # --- Supabase (optional for MVP) ---
     # Supabase Free Tier Integration
