@@ -22,6 +22,20 @@ import { useState, useEffect, useMemo } from 'react';
 // --- MOCK DATA FOR DEMO MODE ---
 const MOCK_CONVERSATIONS = [
   {
+    id: 'mock-priyanshu',
+    phone_number: '+91 70XXX X2157',
+    name: 'Priyanshu',
+    profile_name: 'Priyanshu',
+    status: 'ACTIVE',
+    session_count: 5,
+    last_message: 'The AI agent is running perfectly. Check the logs!',
+    created_at: new Date().toISOString(),
+    messages: [
+      { role: 'user', content: 'Hey, can you show me the latest status of the agency?', created_at: new Date(Date.now() - 3600000).toISOString() },
+      { role: 'assistant', content: 'Certainly! All systems are green. I am currently handling 12 active leads for you.', created_at: new Date(Date.now() - 3500000).toISOString() }
+    ]
+  },
+  {
     id: 'mock-1',
     phone_number: '+91 98XXX X4321',
     name: 'John Doe',
@@ -29,7 +43,7 @@ const MOCK_CONVERSATIONS = [
     status: 'ACTIVE',
     session_count: 1,
     last_message: 'How much for the SEO audit?',
-    created_at: new Date().toISOString(),
+    created_at: new Date(Date.now() - 7200000).toISOString(),
     messages: [
       { role: 'user', content: 'Hello, I need pricing for SEO services.', created_at: new Date(Date.now() - 3600000).toISOString() },
       { role: 'assistant', content: 'Hi John! Our SEO audits start at ₹25,000. Would you like a custom quote?', created_at: new Date(Date.now() - 3500000).toISOString() }
@@ -43,7 +57,7 @@ const MOCK_CONVERSATIONS = [
     status: 'ESCALATED',
     session_count: 2,
     last_message: 'Can I see your portfolio?',
-    created_at: new Date(Date.now() - 5000).toISOString(), // Recent but returning
+    created_at: new Date(Date.now() - 10000).toISOString(),
     messages: [
       { role: 'user', content: 'Hi, I am back. Can I see your past work?', created_at: new Date(Date.now() - 5000).toISOString() },
       { role: 'assistant', content: 'Welcome back Sarah! Certainly. You can explore our featured projects right here.', created_at: new Date(Date.now() - 4000).toISOString() }
