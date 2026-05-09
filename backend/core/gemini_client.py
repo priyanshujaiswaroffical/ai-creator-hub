@@ -99,6 +99,8 @@ async def generate_gemini_response(
 
     print(f"🔄 [AI CASCADE] Starting sequence. Priority: {priority_keys}")
 
+    last_error = "Unknown error occurred."
+
     # Cascade through models
     for role_key in priority_keys:
         model_name = MODEL_TIERS.get(role_key)
@@ -124,6 +126,7 @@ async def generate_gemini_response(
 
             except (ResourceExhausted, FailedPrecondition, InvalidArgument) as e:
                 print(f"⚠️ [AI FAIL] {model_name} failed: {e.__class__.__name__}. Retrying in 0.8s...")
+                last_error = f"{e.__class__.__name__}: {str(e)}"
                 await asyncio.sleep(0.8)  # Breath before next attempt
                 if attempt < MAX_RETRIES_PER_MODEL:
                     continue
@@ -132,9 +135,14 @@ async def generate_gemini_response(
 
             except Exception as e:
                 print(f"❌ [AI CRITICAL] {model_name} crashed: {e}. Moving to next model.")
+                last_error = f"{e.__class__.__name__}: {str(e)}"
                 break  # Critical fail → next model
 
-    # ALL models failed → mock fallback (UI stays clean)
-    print("❌ [AI CASCADE FAILED] All models failed. Falling back to mock responses.")
-    async for chunk in generate_mock_response(message):
-        yield chunk
+    # ALL models failed → Return actual error to UI instead of hiding it behind mock responses
+    print(f"❌ [AI CASCADE FAILED] All models failed. Last error: {last_error}")
+    
+    error_msg = f"System alert: My connection to the Google Gemini API failed. Error: {last_error}"
+    words = error_msg.split(" ")
+    for i, word in enumerate(words):
+        yield word + (" " if i < len(words) - 1 else "")
+        await asyncio.sleep(0.04)
