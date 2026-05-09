@@ -211,16 +211,21 @@ export default function WhatsAppAgencyDashboard() {
               conversations.map((chat) => {
                 const status = getSmartStatus(chat);
                 const isMyChat = isSearchReady && activeChatId === chat.id;
+                const isOwner = chat.phone_number?.includes('7039912157');
+                const displayName = isOwner ? 'Priyanshu' : (!isLive ? chat.name : (chat.profile_name || chat.phone_number));
                 
                 return (
-                  <button 
+                  <motion.button 
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
                     key={chat.id} 
                     disabled={isLive && !isSearchReady}
                     onClick={() => setActiveChatId(chat.id)} 
-                    className={`w-full p-5 text-left border-b border-white/5 transition-all relative group overflow-hidden ${isMyChat ? 'bg-[var(--accent-purple)]/10 border-l-4 border-l-[var(--accent-purple)]' : 'hover:bg-white/5'} ${isLive && !isSearchReady ? 'cursor-default grayscale-[0.5]' : ''}`}
+                    className={`w-full p-5 text-left border-b border-white/5 transition-all relative group overflow-hidden ${isMyChat ? 'bg-[var(--accent-purple)]/10 border-l-4 border-l-[var(--accent-purple)]' : 'hover:bg-white/10'} ${isLive && !isSearchReady ? 'cursor-default grayscale-[0.5]' : ''}`}
                   >
                     <div className="flex justify-between items-start mb-1 gap-2">
-                      <span className="font-bold text-[13px] tracking-tight text-white flex-1 truncate uppercase">{!isLive ? chat.name : (chat.profile_name || chat.phone_number)}</span>
+                      <span className="font-bold text-[13px] tracking-tight text-white flex-1 truncate uppercase">{displayName}</span>
                       <span className="text-[10px] text-zinc-500 font-bold whitespace-nowrap">{chat.created_at ? new Date(chat.created_at).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : 'LIVE'}</span>
                     </div>
                     <p className="text-[12px] text-zinc-400 line-clamp-1 opacity-60 mb-2 truncate">{chat.last_message || 'Session active...'}</p>
@@ -275,29 +280,38 @@ export default function WhatsAppAgencyDashboard() {
              </div>
           )}
 
-          {/* Header */}
-          <div className="h-16 px-8 border-b border-white/5 bg-[#0a0a0a]/30 flex items-center justify-center shrink-0">
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="h-16 px-8 border-b border-white/5 bg-[#0a0a0a]/30 flex items-center justify-center shrink-0"
+          >
             <div className="flex items-center gap-4 overflow-hidden">
-               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[var(--accent-purple)]/20 to-transparent border border-white/10 flex items-center justify-center shrink-0"><MessageSquare size={20} className="text-[var(--accent-purple)]" /></div>
+               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[var(--accent-purple)]/20 to-transparent border border-white/10 flex items-center justify-center shrink-0 shadow-[0_0_20px_rgba(112,0,255,0.2)]"><MessageSquare size={20} className="text-[var(--accent-purple)]" /></div>
                <div className="overflow-hidden">
-                 <h2 className="font-bold text-base text-white tracking-wide truncate">{!isLive ? activeChat?.name : (activeChat?.profile_name || activeChat?.phone_number || 'Secure Session')}</h2>
+                 <h2 className="font-bold text-base text-white tracking-wide truncate">{activeChat?.phone_number?.includes('7039912157') ? 'Priyanshu' : (!isLive ? activeChat?.name : (activeChat?.profile_name || activeChat?.phone_number || 'Secure Session'))}</h2>
                  <div className="flex items-center gap-2">
                     <CheckCircle2 size={12} className="text-emerald-500 shrink-0" />
                     <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest truncate opacity-70">End-to-End Encrypted Communication</span>
                  </div>
                </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Messages */}
           <div className="flex-1 p-8 overflow-y-auto space-y-8 custom-scrollbar">
             {activeChat?.messages?.map((msg: any, idx: number) => (
-              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} key={idx} className={`flex flex-col max-w-[80%] ${msg.role === 'user' ? 'items-start' : 'items-end ml-auto text-right'}`}>
-                <div className={`p-5 rounded-2xl shadow-xl border ${msg.role === 'user' ? 'bg-[#0a0a0a] border-white/10 rounded-tl-none text-white' : 'bg-[var(--accent-purple)]/10 border-[var(--accent-purple)]/30 rounded-tr-none text-white shadow-[0_0_20px_rgba(112,0,255,0.1)]'}`}>
-                  <p className="text-[14px] leading-relaxed">{msg.content}</p>
+              <motion.div 
+                initial={{ opacity: 0, y: 20, scale: 0.95 }} 
+                animate={{ opacity: 1, y: 0, scale: 1 }} 
+                transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+                key={idx} 
+                className={`flex flex-col max-w-[80%] ${msg.role === 'user' ? 'items-start' : 'items-end ml-auto text-right'}`}
+              >
+                <div className={`p-5 rounded-2xl shadow-2xl border transition-transform hover:scale-[1.02] ${msg.role === 'user' ? 'bg-[#0a0a0a] border-white/10 rounded-tl-none text-white' : 'bg-gradient-to-br from-[var(--accent-purple)]/20 to-[var(--accent-purple)]/5 border-[var(--accent-purple)]/30 rounded-tr-none text-white shadow-[0_10px_40px_rgba(112,0,255,0.15)] backdrop-blur-sm'}`}>
+                  <p className="text-[14px] leading-relaxed font-medium">{msg.content}</p>
                 </div>
-                <div className="flex items-center gap-2 mt-3 text-[10px] font-bold uppercase tracking-widest text-[#a1a1aa]">
-                   {msg.role === 'user' ? 'Client' : 'AI Agent'} • {new Date(msg.created_at).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}
+                <div className="flex items-center gap-2 mt-3 text-[10px] font-bold uppercase tracking-widest text-[#a1a1aa] opacity-60">
+                   {msg.role === 'user' ? 'Client' : "Priyanshu's AI"} • {new Date(msg.created_at).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}
                 </div>
               </motion.div>
             ))}
