@@ -21,10 +21,10 @@ function TypewriterText({ text, isStreaming }: { text: string, isStreaming: bool
     }
 
     const timeout = setTimeout(() => {
-      // Increase speed: add 3 characters at a time for snappier feel
-      const nextLength = Math.min(text.length, displayedText.length + 3);
+      // Adjusted speed: add 1 character at a time for a more natural feel
+      const nextLength = Math.min(text.length, displayedText.length + 1);
       setDisplayedText(text.slice(0, nextLength));
-    }, 5); // Faster interval (5ms)
+    }, 10); // Natural interval (10ms)
 
     return () => clearTimeout(timeout);
   }, [text, displayedText, isStreaming]);
