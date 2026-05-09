@@ -151,7 +151,7 @@ export default function WhatsAppAgencyDashboard() {
   };
 
   return (
-    <div className="h-screen bg-[var(--bg-obsidian)] text-[var(--text-primary)] font-body selection:bg-[var(--accent-purple)] selection:text-white overflow-hidden flex flex-col">
+    <div className="h-screen bg-[#050505] text-white font-body selection:bg-[var(--accent-purple)] selection:text-white overflow-hidden flex flex-col">
       {/* Top Nav */}
       <nav className="h-16 border-b border-white/5 bg-[#0a0a0a]/50 backdrop-blur-md flex items-center justify-between px-6 z-30 shrink-0">
         <div className="flex items-center gap-4">
@@ -162,16 +162,16 @@ export default function WhatsAppAgencyDashboard() {
             <div className="w-8 h-8 rounded-lg bg-[var(--accent-purple)] flex items-center justify-center shadow-[0_0_15px_rgba(112,0,255,0.4)]">
               <Bot size={18} className="text-white" />
             </div>
-            <h1 className="font-display font-bold tracking-tight text-lg">
+            <h1 className="font-display font-bold tracking-tight text-lg text-white">
               Agency <span className="text-gradient">Command Center</span>
             </h1>
           </div>
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 bg-[var(--bg-surface)] p-1 rounded-full border border-[var(--glass-border)]">
-            <button onClick={() => toggleLiveMode(false)} className={`px-4 py-1.5 rounded-full text-[10px] font-bold uppercase transition-all ${!isLive ? 'bg-[var(--accent-purple)] text-white shadow-lg shadow-[var(--accent-purple)]/20' : 'text-[var(--text-secondary)] hover:text-white'}`}>Portfolio</button>
-            <button onClick={() => toggleLiveMode(true)} className={`px-4 py-1.5 rounded-full text-[10px] font-bold uppercase transition-all ${isLive ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20' : 'text-[var(--text-secondary)] hover:text-white'}`}>Live Node</button>
+          <div className="flex items-center gap-2 bg-white/5 p-1 rounded-full border border-white/10">
+            <button onClick={() => toggleLiveMode(false)} className={`px-4 py-1.5 rounded-full text-[10px] font-bold uppercase transition-all ${!isLive ? 'bg-[var(--accent-purple)] text-white shadow-lg shadow-[var(--accent-purple)]/20' : 'text-zinc-400 hover:text-white'}`}>Portfolio</button>
+            <button onClick={() => toggleLiveMode(true)} className={`px-4 py-1.5 rounded-full text-[10px] font-bold uppercase transition-all ${isLive ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20' : 'text-zinc-400 hover:text-white'}`}>Live Node</button>
           </div>
 
           <a href={`https://wa.me/15556412032?text=Hello! I'm testing the Agency Bot from the portfolio. My number is ${clientPhone || '...'}`} target="_blank" className="btn-primary !py-2 !px-4 !text-[11px] !rounded-lg flex items-center gap-2 hover:scale-105 transition-transform shrink-0 shadow-xl shadow-[var(--accent-purple)]/30"><Zap size={14} />Test Bot Live</a>
@@ -183,18 +183,18 @@ export default function WhatsAppAgencyDashboard() {
         <aside className="w-[300px] min-w-[300px] max-w-[300px] shrink-0 border-r border-white/5 bg-[#050505]/30 flex flex-col overflow-hidden">
           <div className="p-5 border-b border-white/5 shrink-0">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" size={14} />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" size={14} />
               <input 
                 type="text" 
                 placeholder={isLive ? "Enter number to unlock..." : "Search demo clients..."} 
                 value={clientPhone} 
                 onChange={(e) => setClientPhone(e.target.value)} 
-                className="w-full bg-[var(--bg-obsidian)] border border-[var(--glass-border)] rounded-xl py-2.5 pl-10 pr-4 text-xs focus:border-[var(--accent-purple)] outline-none transition-all" 
+                className="w-full bg-black/50 border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-xs focus:border-[var(--accent-purple)] text-white placeholder:text-zinc-600 outline-none transition-all" 
               />
             </div>
             {isLive && !isSearchReady && (
               <div className="mt-4 flex items-center justify-between">
-                 <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest flex items-center gap-2">
+                 <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest flex items-center gap-2">
                    <Activity size={12} className="text-emerald-500" />
                    Recent Activity
                  </span>
@@ -217,13 +217,13 @@ export default function WhatsAppAgencyDashboard() {
                     key={chat.id} 
                     disabled={isLive && !isSearchReady}
                     onClick={() => setActiveChatId(chat.id)} 
-                    className={`w-full p-5 text-left border-b border-[var(--glass-border)]/20 transition-all relative group overflow-hidden ${isMyChat ? 'bg-[var(--accent-purple)]/10 border-l-4 border-l-[var(--accent-purple)]' : 'hover:bg-white/5'} ${isLive && !isSearchReady ? 'cursor-default grayscale-[0.5]' : ''}`}
+                    className={`w-full p-5 text-left border-b border-white/5 transition-all relative group overflow-hidden ${isMyChat ? 'bg-[var(--accent-purple)]/10 border-l-4 border-l-[var(--accent-purple)]' : 'hover:bg-white/5'} ${isLive && !isSearchReady ? 'cursor-default grayscale-[0.5]' : ''}`}
                   >
                     <div className="flex justify-between items-start mb-1 gap-2">
                       <span className="font-bold text-[13px] tracking-tight text-white flex-1 truncate uppercase">{!isLive ? chat.name : (chat.profile_name || chat.phone_number)}</span>
-                      <span className="text-[10px] text-[var(--text-muted)] font-bold whitespace-nowrap">{chat.created_at ? new Date(chat.created_at).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : 'LIVE'}</span>
+                      <span className="text-[10px] text-zinc-500 font-bold whitespace-nowrap">{chat.created_at ? new Date(chat.created_at).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : 'LIVE'}</span>
                     </div>
-                    <p className="text-[12px] text-[var(--text-secondary)] line-clamp-1 opacity-60 mb-2 truncate">{chat.last_message || 'Session active...'}</p>
+                    <p className="text-[12px] text-zinc-400 line-clamp-1 opacity-60 mb-2 truncate">{chat.last_message || 'Session active...'}</p>
                     <div className="flex items-center gap-2 mt-2">
                       {status === 'ACTIVE' ? (
                         <span className="text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-widest bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-[0_0_10px_rgba(16,185,129,0.1)] flex items-center gap-1.5">
@@ -255,15 +255,15 @@ export default function WhatsAppAgencyDashboard() {
                   </div>
                   
                   <h2 className="font-display font-bold text-3xl mb-4 tracking-tight text-white">Secure Privacy Gateway</h2>
-                  <p className="text-sm text-[var(--text-secondary)] leading-relaxed mb-10 opacity-70 max-w-md mx-auto">
+                  <p className="text-sm text-zinc-400 leading-relaxed mb-10 opacity-70 max-w-md mx-auto">
                     To protect client privacy, this dashboard requires your full phone number to unlock your personal AI conversation logs.
                   </p>
                   
                   <div className="flex flex-col gap-4 text-center mb-10">
-                    <p className="text-sm text-[var(--text-primary)] font-medium">
+                    <p className="text-sm text-zinc-300 font-medium">
                       <span className="text-[var(--accent-purple)] font-bold">Step 1:</span> Click <span className="text-[var(--accent-purple)] font-bold">Test Bot Live</span> to start a chat.
                     </p>
-                    <p className="text-sm text-[var(--text-primary)] font-medium">
+                    <p className="text-sm text-zinc-300 font-medium">
                       <span className="text-[var(--accent-purple)] font-bold">Step 2:</span> Enter your full <span className="text-white font-bold">10-digit number</span> to see logs.
                     </p>
                   </div>
@@ -283,7 +283,7 @@ export default function WhatsAppAgencyDashboard() {
                  <h2 className="font-bold text-base text-white tracking-wide truncate">{!isLive ? activeChat?.name : (activeChat?.profile_name || activeChat?.phone_number || 'Secure Session')}</h2>
                  <div className="flex items-center gap-2">
                     <CheckCircle2 size={12} className="text-emerald-500 shrink-0" />
-                    <span className="text-[10px] text-[var(--text-muted)] font-bold uppercase tracking-widest truncate opacity-70">End-to-End Encrypted Communication</span>
+                    <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest truncate opacity-70">End-to-End Encrypted Communication</span>
                  </div>
                </div>
             </div>
@@ -303,7 +303,7 @@ export default function WhatsAppAgencyDashboard() {
             ))}
           </div>
 
-          <div className="p-4 border-t border-[var(--glass-border)] text-center bg-black/10 shrink-0"><p className="text-[9px] text-[var(--text-muted)] font-bold uppercase tracking-[0.5em] opacity-50">Agency Node Process v1.1.2</p></div>
+          <div className="p-4 border-t border-white/5 text-center bg-black/10 shrink-0"><p className="text-[9px] text-zinc-500 font-bold uppercase tracking-[0.5em] opacity-50">Agency Node Process v1.1.2</p></div>
         </main>
       </div>
 
