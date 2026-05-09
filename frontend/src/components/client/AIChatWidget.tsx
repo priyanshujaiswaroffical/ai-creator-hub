@@ -8,7 +8,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useChatStore } from '@/store/chat-store';
 
 function TypewriterText({ text, isStreaming }: { text: string, isStreaming: boolean }) {
-  const [displayedText, setDisplayedText] = useState('');
+  const [displayedText, setDisplayedText] = useState(() => isStreaming ? '' : text);
   
   useEffect(() => {
     // If we're not streaming and text is already fully displayed, don't restart
@@ -21,8 +21,10 @@ function TypewriterText({ text, isStreaming }: { text: string, isStreaming: bool
     }
 
     const timeout = setTimeout(() => {
-      setDisplayedText(text.slice(0, displayedText.length + 1));
-    }, 15); // Adjust speed here (lower = faster)
+      // Increase speed: add 3 characters at a time for snappier feel
+      const nextLength = Math.min(text.length, displayedText.length + 3);
+      setDisplayedText(text.slice(0, nextLength));
+    }, 5); // Faster interval (5ms)
 
     return () => clearTimeout(timeout);
   }, [text, displayedText, isStreaming]);

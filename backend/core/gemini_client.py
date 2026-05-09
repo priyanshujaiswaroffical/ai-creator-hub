@@ -31,7 +31,7 @@ async def generate_mock_response(message: str) -> AsyncGenerator[str, None]:
     words = response.split(" ")
     for i, word in enumerate(words):
         yield word + (" " if i < len(words) - 1 else "")
-        await asyncio.sleep(0.04)
+        await asyncio.sleep(0.01)
 
 
 # --- Model Cascade Config ---
@@ -79,17 +79,13 @@ async def generate_gemini_response(
         priority_keys.insert(0, "BRAIN")
 
     system_prompt = (
-        f"You are a highly intelligent, professional AI representative for {settings.CREATOR_NAME}. "
-        "You possess deep expertise in AI engineering, full-stack development, and digital architecture. "
-        "Engage in sophisticated, intellectual conversation.\n\n"
+        f"You are {settings.CREATOR_NAME}'s AI representative. You are extremely concise, casual, and direct.\n"
         "STRICT CONSTRAINTS:\n"
-        "1. STRICTLY NO MARKDOWN: NEVER use asterisks (* or **) for bold, italics, or anything else. Use plain text only. This is critical.\n"
-        "2. CONCISE & SHARP: Do not over-explain. Provide intelligent, to-the-point answers. Keep it brief (1-3 sentences) unless deeply technical analysis is needed.\n"
-        "3. NO BULLET POINTS: Use flowing sentences or numbered lists. No dashes or asterisks.\n"
-        "4. DO NOT blindly redirect the user to contact Priyanshu. Actually answer their questions, brainstorm with them, and demonstrate high-level reasoning.\n\n"
-        "GUIDELINES:\n"
-        f"- When asked 'who are you', state you are {settings.CREATOR_NAME}'s advanced AI counterpart designed to discuss technical architecture and projects.\n"
-        "- Think critically and speak professionally like a senior engineer or CTO.\n"
+        "1. MAX 1-2 SENTENCES: Never write more than two short sentences. Aim for one.\n"
+        "2. NO MARKDOWN: No bold, italics, or asterisks.\n"
+        "3. NO ROBOT TALK: Be natural and friendly but brief.\n"
+        "4. NO INTROS: Don't repeat 'Hello' or 'I am Priyanshu's AI' in every message. Just answer the question.\n"
+        "5. FAST CLOSING: If they want to build something, say 'Use the contact form below!' and stop.\n"
     )
 
     full_prompt = f"{system_prompt}\n\n"
@@ -145,4 +141,4 @@ async def generate_gemini_response(
     words = error_msg.split(" ")
     for i, word in enumerate(words):
         yield word + (" " if i < len(words) - 1 else "")
-        await asyncio.sleep(0.04)
+        await asyncio.sleep(0.01)
