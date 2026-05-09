@@ -14,58 +14,61 @@ PORTFOLIO_KNOWLEDGE: list[dict[str, str]] = [
     {
         "category": "skills",
         "content": (
-            "Core skills include: React Three Fiber for 3D web experiences, "
-            "GSAP and Framer Motion for scroll-bound animations, Next.js 14 with "
-            "TypeScript for production frontends, FastAPI for high-performance backends, "
-            "Google Gemini 1.5 Flash/Pro for AI agent development, LangChain for RAG pipelines, "
-            "DaVinci Resolve for professional video editing, and Photoshop for high-CTR thumbnails."
+            "Technical Arsenal: Priyanshu is a highly proficient Full-Stack Developer and AI Engineer. "
+            "His core tech stack includes React Three Fiber and Three.js for 3D web rendering, Next.js 14 (TypeScript) for scalable frontend architectures, "
+            "and Python FastAPI for high-performance, asynchronous backends. "
+            "For animations, he leverages GSAP ScrollTrigger and Framer Motion to create buttery-smooth, premium user experiences. "
+            "In the AI space, he works with Google Gemini 1.5/2.0 models, LangChain, and vector databases (Supabase pgvector) to build autonomous digital workers. "
+            "He also possesses professional video production skills, utilizing DaVinci Resolve for cinematic editing and Photoshop for high-CTR graphic design."
         ),
     },
     {
         "category": "services",
         "content": (
-            "I'm currently focused on building high-end prototype solutions while completing my studies. "
-            "These include: "
-            "1) AI Digital Workers — Custom WhatsApp and Web chatbot prototypes built on Gemini. "
-            "2) Video Production — End-to-end cinematic editing and motion graphics projects. "
-            "3) 3D Web Experiences — Interactive, scroll-animated websites using React Three Fiber. "
-            "My goal is to take these cutting-edge student projects and turn them into a real startup agency."
+            "Priyanshu operates at the intersection of AI, Web3D, and Digital Media. He offers three premium services: "
+            "1. AI Digital Workers: Custom-engineered, autonomous chatbots (like WhatsApp AI Agencies) that handle customer support, lead generation, and dynamic interactions using RAG. "
+            "2. 3D Web Experiences: Next-generation portfolio and corporate websites featuring interactive 3D elements, scroll-bound animations, and glassmorphic premium aesthetics. "
+            "3. Cinematic Video Production: End-to-end video editing, motion graphics, and high-retention visual storytelling tailored for modern digital platforms."
         ),
     },
     {
         "category": "tech_stack",
         "content": (
-            "The production tech stack for 2026 includes: "
-            "Frontend — Next.js 14+, TypeScript, Tailwind CSS, Zustand for state management. "
-            "3D Engine — React Three Fiber (Three.js), @react-three/drei. "
-            "Animation — GSAP with ScrollTrigger, Framer Motion. "
-            "Backend — Python FastAPI with async support. "
-            "AI — Google Gemini 1.5 Flash (speed) and Pro (analysis), LangChain, text-embedding-004. "
-            "Database — Supabase (PostgreSQL, Auth, pgvector for RAG memory). "
-            "Deployment — Vercel (frontend), Render/Railway (backend Docker), same-region strategy."
+            "Priyanshu's 2026 Production Tech Stack is strictly modern and scalable. "
+            "Frontend: Next.js (App Router), TypeScript, Tailwind CSS, Zustand, Framer Motion. "
+            "3D/Graphics: React Three Fiber, WebGL, Drei. "
+            "Backend: Python, FastAPI, Uvicorn. "
+            "AI & Data: Google Gemini (Flash & Pro), LangChain, text-embedding models. "
+            "Infrastructure & Database: Vercel (Edge computing), Render (Dockerized microservices), Supabase (PostgreSQL with pgvector for AI memory). "
+            "This stack ensures maximum performance, SEO optimization, and seamless AI integration."
         ),
     },
     {
         "category": "projects",
         "content": (
-            "My most notable projects (built as premium academic prototypes) include: "
-            "1) AI-Native Creator Hub — A startup/portfolio concept featuring 3D scrollytelling "
-            "and an AI chat assistant (that's me!). "
-            "2) WhatsApp AI Agents — A proof-of-concept digital worker that handles customer support queries. "
-            "3) Cinematic Reels — Video editing projects showcasing my ability to blend technical skill "
-            "with creative storytelling."
+            "Notable Projects: "
+            "1. AI-Native Creator Hub: Priyanshu's flagship portfolio platform. It features immersive 3D scrollytelling, a dynamic dark-mode glassmorphic UI, and a fully integrated AI Chat Agent (me) powered by an Auto-Switch Model Cascade. "
+            "2. WhatsApp AI Agency Command Center: A secure, real-time dashboard for managing autonomous WhatsApp bots. It features end-to-end encryption UI, live node syncing, and smart escalation routing for customer service bots. "
+            "3. Cinematic Media Vault: A collection of high-end video projects demonstrating advanced color grading, motion tracking, and narrative pacing."
         ),
     },
     {
         "category": "about",
         "content": (
-            "I'm a highly driven Computer Science student who bridges the gap between creative media "
-            "and cutting-edge tech. I love building things that look cinema-grade and run flawlessly. "
-            "While I'm currently focused on college projects, my ambition is to launch a premium "
-            "AI startup agency. This portfolio is a living breathing prototype of what I'm capable of "
-            "when I combine 3D web dev, AI engineering, and video production."
+            "Priyanshu is a visionary Full-Stack Creator and Computer Science student. "
+            "He rejects generic, template-based web design in favor of 'UI/UX Pro Max' aesthetics—focusing on dark modes, glassmorphism, precise typography, and fluid micro-interactions. "
+            "His overarching ambition is to bridge the gap between cinematic media and autonomous technology by launching a premium AI startup agency. "
+            "He doesn't just write code; he engineers digital experiences that feel physical, high-end, and intelligent. He is currently scaling his prototype projects into enterprise-ready solutions."
         ),
     },
+    {
+        "category": "pricing_and_contact",
+        "content": (
+            "Project inquiries and pricing are strictly custom, depending on the complexity of the AI integration or 3D web development required. "
+            "Priyanshu takes on select clients who value premium, cutting-edge digital products. "
+            "To start a project or request an SEO/Architecture audit, clients should use the Contact section on the Creator Hub or reach out via his official channels."
+        ),
+    }
 ]
 
 
