@@ -94,7 +94,7 @@ export default function WhatsAppAgencyDashboard() {
     const fetchData = async () => {
       try {
         const apiBase = process.env.NEXT_PUBLIC_AGENCY_API_URL || 'http://localhost:8000';
-        
+
         // 1. Always try to fetch Owner's LIVE chat (Priyanshu)
         const ownerPhone = '7039912157';
         const ownerRes = await fetch(`${apiBase}/api/conversations?phone=${ownerPhone}`, { headers: { 'Authorization': `Bearer WhatsappAiAgencySecret` } });
@@ -114,27 +114,50 @@ export default function WhatsAppAgencyDashboard() {
         if (isMounted) {
           // Merge Mock + Live Owner + Live Others
           const baseList = isLive ? otherChats : [...MOCK_CONVERSATIONS];
-          
+
           // If we found a real live chat for Priyanshu, replace the mock one or add it
           let finalConversations = [...baseList];
           if (liveOwnerChat) {
             // Remove any existing mock-priyanshu and add the real one
             finalConversations = [liveOwnerChat, ...finalConversations.filter(c => c.phone_number?.replace(/\D/g, '') !== ownerPhone)];
           }
-          
+
           setConversations(finalConversations);
-          
+
           if (isSearchReady && !activeChatId && finalConversations.length > 0) {
-             setActiveChatId(finalConversations[0].id);
+            setActiveChatId(finalConversations[0].id);
           }
         }
       } catch (err) { console.error('Fetch error:', err); }
     };
-    
+
     fetchData();
-    const interval = setInterval(fetchData, 4000);
+    const interval = setInterval(fetchData, 5000);
     return () => { isMounted = false; clearInterval(interval); };
   }, [isLive, clientPhone, activeChatId, isSearchReady]);
+
+  // Fetch Live Messages specifically for Priyanshu's ID
+  useEffect(() => {
+    const liveChat = conversations.find(c => c.phone_number?.includes('7039912157') || c.id === 'mock-priyanshu');
+    if (!liveChat || (isLive && !activeChatId)) return;
+
+    const fetchLiveLogs = async () => {
+      try {
+        const apiBase = process.env.NEXT_PUBLIC_AGENCY_API_URL || 'https://whatsapp-ai-agency.onrender.com';
+        const res = await fetch(`${apiBase}/api/conversations/917039912157`, { 
+          headers: { 'Authorization': `Bearer WhatsappAiAgencySecret` } 
+        });
+        const data = await res.json();
+        if (data.messages) {
+          setMessageCache(prev => ({ ...prev, [liveChat.id]: data.messages }));
+        }
+      } catch (err) { console.error('Live Log Error:', err); }
+    };
+
+    fetchLiveLogs();
+    const interval = setInterval(fetchLiveLogs, 5000);
+    return () => clearInterval(interval);
+  }, [conversations]);
 
   useEffect(() => {
     if (!activeChatId || activeChatId.startsWith('mock-')) return;
@@ -152,12 +175,19 @@ export default function WhatsAppAgencyDashboard() {
   }, [isLive, activeChatId]);
 
   const activeChat = useMemo(() => {
-    if (!isLive || activeChatId.startsWith('mock-')) {
-      return MOCK_CONVERSATIONS.find(c => c.id === activeChatId) || MOCK_CONVERSATIONS[0];
-    }
-    const base = conversations.find(c => c.id === activeChatId);
-    if (!base) return null;
-    return { ...base, messages: messageCache[activeChatId] || [] };
+    const isMock = !isLive || activeChatId.startsWith('mock-');
+    const baseChat = isMock 
+      ? (MOCK_CONVERSATIONS.find(c => c.id === activeChatId) || MOCK_CONVERSATIONS[0])
+      : conversations.find(c => c.id === activeChatId);
+
+    if (!baseChat) return null;
+
+    // If we have live messages in cache for this ID (even if mock), use them!
+    const liveMessages = messageCache[baseChat.id];
+    return { 
+      ...baseChat, 
+      messages: liveMessages && liveMessages.length > 0 ? liveMessages : baseChat.messages 
+    };
   }, [isLive, activeChatId, conversations, messageCache]);
 
   // --- SMART STATUS LOGIC (TODAY + 1ST VISIT = ACTIVE, OTHERWISE = ESCALATED) ---
@@ -197,7 +227,7 @@ export default function WhatsAppAgencyDashboard() {
             <button onClick={() => setShowAccessDenied(true)} className={`px-4 py-1.5 rounded-full text-[10px] font-bold uppercase transition-all ${isLive ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20' : 'text-zinc-400 hover:text-white'}`}>Live Node</button>
           </div>
 
-          <button 
+          <button
             onClick={() => setShowAccessDenied(true)}
             className="btn-primary !py-2 !px-4 !text-[11px] !rounded-lg flex items-center gap-2 hover:scale-105 transition-transform shrink-0 shadow-xl shadow-[var(--accent-purple)]/30"
           >
@@ -210,7 +240,7 @@ export default function WhatsAppAgencyDashboard() {
         {/* Access Denied Modal */}
         {showAccessDenied && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm px-4">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               className="max-w-md w-full bg-[#0a0a0a] border border-white/10 rounded-3xl p-8 text-center shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
@@ -222,7 +252,7 @@ export default function WhatsAppAgencyDashboard() {
               <p className="text-zinc-400 text-sm leading-relaxed mb-8 font-medium">
                 Sorry you can't use this features right now due to some personal reasons.
               </p>
-              <button 
+              <button
                 onClick={() => setShowAccessDenied(false)}
                 className="w-full py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 font-bold text-xs uppercase tracking-widest transition-all"
               >
