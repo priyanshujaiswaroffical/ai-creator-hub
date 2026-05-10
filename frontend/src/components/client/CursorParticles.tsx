@@ -121,7 +121,7 @@ export default function CursorParticles() {
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 pointer-events-none z-[-1]"
+      style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: -1 }}
     />
   );
 }
