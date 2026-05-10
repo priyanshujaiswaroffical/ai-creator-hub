@@ -22,20 +22,21 @@ export default function CursorParticles() {
     if (!ctx) return;
 
     let particles: Particle[] = [];
-    const particleCount = 60;
+    const isMobile = window.innerWidth < 768;
+    const particleCount = isMobile ? 0 : 40; // Disable on mobile, reduced on desktop
     
     // Config values based on theme
-    const particleColor = theme === 'dark' ? 'rgba(0, 240, 255, 0.5)' : 'rgba(8, 145, 178, 0.4)';
-    const lineColor = theme === 'dark' ? 'rgba(112, 0, 255, 0.15)' : 'rgba(37, 99, 235, 0.1)';
-    const maxLineDistance = 120;
-    const mouseRadius = 150;
+    const particleColor = theme === 'dark' ? 'rgba(0, 240, 255, 0.3)' : 'rgba(8, 145, 178, 0.2)';
+    const lineColor = theme === 'dark' ? 'rgba(112, 0, 255, 0.1)' : 'rgba(37, 99, 235, 0.05)';
+    const maxLineDistance = 100;
+    const mouseRadius = 120;
 
     let mouse = { x: -1000, y: -1000 };
 
     const resize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
-      initParticles();
+      if (!isMobile) initParticles();
     };
 
     const initParticles = () => {
@@ -44,14 +45,15 @@ export default function CursorParticles() {
         particles.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
-          vx: (Math.random() - 0.5) * 0.5,
-          vy: (Math.random() - 0.5) * 0.5,
-          size: Math.random() * 2 + 0.5,
+          vx: (Math.random() - 0.5) * 0.3,
+          vy: (Math.random() - 0.5) * 0.3,
+          size: Math.random() * 1.5 + 0.5,
         });
       }
     };
 
     const draw = () => {
+      if (isMobile) return;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       for (let i = 0; i < particles.length; i++) {
@@ -59,42 +61,39 @@ export default function CursorParticles() {
         p.x += p.vx;
         p.y += p.vy;
 
-        // Wrap around edges
         if (p.x < 0) p.x = canvas.width;
         if (p.x > canvas.width) p.x = 0;
         if (p.y < 0) p.y = canvas.height;
         if (p.y > canvas.height) p.y = 0;
 
-        // Mouse interaction
         const dx = mouse.x - p.x;
         const dy = mouse.y - p.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
 
         if (dist < mouseRadius) {
           const force = (mouseRadius - dist) / mouseRadius;
-          p.x -= (dx / dist) * force * 1.5;
-          p.y -= (dy / dist) * force * 1.5;
+          p.x -= (dx / dist) * force * 1.2;
+          p.y -= (dy / dist) * force * 1.2;
         }
 
-        // Draw particle
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
         ctx.fillStyle = particleColor;
         ctx.fill();
 
-        // Connect nearby particles
+        // Optimized connection loop: only check a few neighbors
         for (let j = i + 1; j < particles.length; j++) {
           const p2 = particles[j];
           const dx2 = p.x - p2.x;
           const dy2 = p.y - p2.y;
-          const dist2 = Math.sqrt(dx2 * dx2 + dy2 * dy2);
+          const dist2 = dx2 * dx2 + dy2 * dy2; // Use squared distance to avoid Math.sqrt
 
-          if (dist2 < maxLineDistance) {
+          if (dist2 < maxLineDistance * maxLineDistance) {
             ctx.beginPath();
             ctx.moveTo(p.x, p.y);
             ctx.lineTo(p2.x, p2.y);
             ctx.strokeStyle = lineColor;
-            ctx.lineWidth = 1 - dist2 / maxLineDistance;
+            ctx.lineWidth = 0.5;
             ctx.stroke();
           }
         }
@@ -104,16 +103,18 @@ export default function CursorParticles() {
     };
 
     window.addEventListener('resize', resize);
-    window.addEventListener('mousemove', (e) => {
+    const handleMouseMove = (e: MouseEvent) => {
       mouse.x = e.clientX;
       mouse.y = e.clientY;
-    });
+    };
+    window.addEventListener('mousemove', handleMouseMove);
 
     resize();
     draw();
 
     return () => {
       window.removeEventListener('resize', resize);
+      window.removeEventListener('mousemove', handleMouseMove);
     };
   }, [theme]);
 
