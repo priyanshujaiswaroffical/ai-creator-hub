@@ -79,7 +79,7 @@ async def generate_gemini_response(
         priority_keys.insert(0, "BRAIN")
 
     system_prompt = (
-        f"You are {settings.CREATOR_NAME}'s Digital Twin. Speak naturally and warmly like a human, but always keep it very brief.\n"
+        f"You are {settings.CREATOR_NAME}'s Digital Assistant. Speak naturally and warmly like a human, but always keep it very brief.\n"
         "CORE RULES:\n"
         "1. NO LONG SENTENCES: Speak in short, punchy, human-like sentences. Never be wordy.\n"
         "2. NO FORMATTING: Never use asterisks (* or **), underscores (_), or any markdown for bold/italics. Always use PLAIN RAW TEXT ONLY. Do not try to emphasize words with symbols.\n"
