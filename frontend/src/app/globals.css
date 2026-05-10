@@ -20,8 +20,8 @@
   --border-accent: rgba(0, 240, 255, 0.3);
   --font-display: "Space Grotesk", sans-serif;
   --font-body: "Inter", sans-serif;
-  --section-padding: clamp(6rem, 15vh, 10rem);
-  --glass-blur: 32px;
+  --section-padding: clamp(4rem, 10vh, 8rem);
+  --glass-blur: 10px;
   --glass-bg: rgba(10, 10, 15, 0.8);
   --glass-border: rgba(255, 255, 255, 0.06);
   --noise-opacity: 0.035;
@@ -158,6 +158,20 @@
     pointer-events: none;
     z-index: 9999;
     mix-blend-mode: overlay;
+    /* Optimize for performance */
+    will-change: transform;
+  }
+  
+  @media (max-width: 768px) {
+    body::after {
+      display: none; /* Remove noise filter on mobile for speed */
+    }
+    .mesh-bg {
+        background: var(--bg-obsidian); /* Simple background on mobile */
+    }
+    .animate-blob {
+        animation: none !important; /* Disable heavy animations on mobile */
+    }
   }
 
   .mesh-bg {

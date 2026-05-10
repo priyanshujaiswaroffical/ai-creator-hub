@@ -62,11 +62,14 @@ function AbstractGeometry() {
 }
 
 export default function Scene3D() {
+  // Check if we are on mobile to disable heavy effects
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
   return (
     <div className="absolute inset-0 pointer-events-none" style={{ opacity: 0.6 }}>
       <Canvas
         camera={{ position: [0, 0, 5], fov: 45 }}
-        dpr={[1, 1.5]} // Capped at 1.5 to prevent massive lag on retina mobile screens
+        dpr={isMobile ? 1 : [1, 1.5]} 
         gl={{ antialias: false, alpha: true, powerPreference: "high-performance" }}
       >
         <ambientLight intensity={0.5} />
@@ -75,8 +78,10 @@ export default function Scene3D() {
         
         <AbstractGeometry />
         
-        {/* Floating particles background */}
-        <Sparkles count={80} scale={10} size={2} speed={0.4} color="#00F0FF" opacity={0.4} />
+        {/* Floating particles background - Disabled on mobile for speed */}
+        {!isMobile && (
+          <Sparkles count={80} scale={10} size={2} speed={0.4} color="#00F0FF" opacity={0.4} />
+        )}
         
         <Environment preset="city" />
       </Canvas>
